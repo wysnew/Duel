@@ -1,0 +1,2593 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>TEKKEN WACANA: ONLINE CUP EDITION</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,500;0,700;1,700&family=Inter:wght@400;600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #060a13;
+      --bg-panel: #0f1626;
+      --bg-card: #151e33;
+      --gold: #ffcc00;
+      --gold-dark: #d98200;
+      --red: #ff2a4b;
+      --blue: #00d2ff;
+      --green: #00e676;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #253352;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: radial-gradient(circle at top, #111c36 0%, var(--bg-dark) 82%);
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background:
+        linear-gradient(rgba(56, 189, 248, 0.04) 1px, transparent 1px) 0 0 / 48px 48px,
+        linear-gradient(90deg, rgba(56, 189, 248, 0.04) 1px, transparent 1px) 0 0 / 48px 48px;
+      animation: gridMove 10s linear infinite;
+    }
+
+    @keyframes gridMove {
+      to { background-position: 0 48px, 48px 0; }
+    }
+
+    h1, h2, h3, .arcade-font {
+      font-family: 'Orbitron', sans-serif;
+      letter-spacing: 1px;
+    }
+
+    .sub-font {
+      font-family: 'Chakra Petch', sans-serif;
+    }
+
+    /* TOP BAR */
+    header {
+      background: rgba(9, 14, 24, 0.94);
+      border-bottom: 2px solid var(--border);
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-badge {
+      background: linear-gradient(135deg, #0284c7, #1d4ed8);
+      color: #fff;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      letter-spacing: 1px;
+    }
+
+    .brand-title {
+      font-size: 16px;
+      font-weight: 900;
+      background: linear-gradient(90deg, #fff, var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: #172138;
+      border: 1px solid var(--border);
+      cursor: pointer;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 8px var(--gold);
+    }
+    .status-dot.online { background: var(--green); box-shadow: 0 0 8px var(--green); }
+    .status-dot.error { background: var(--red); box-shadow: 0 0 8px var(--red); }
+
+    /* MAIN CONTAINER */
+    main {
+      flex: 1;
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .screen {
+      display: none;
+      animation: fadeIn 0.25s ease;
+    }
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* CARDS & INPUTS */
+    .panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+      padding: 20px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+    }
+
+    .hero-title {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .hero-title h1 {
+      font-size: clamp(24px, 5vw, 38px);
+      font-weight: 900;
+      font-style: italic;
+      text-transform: uppercase;
+      background: linear-gradient(180deg, #ffffff 20%, #ffcc00 85%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 4px 16px rgba(0, 210, 255, 0.28));
+    }
+
+    .hero-title p {
+      color: var(--text-muted);
+      font-size: 13px;
+      margin-top: 6px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 680px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+
+    .card-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .card-box h3 {
+      font-size: 15px;
+      color: var(--gold);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    input[type="text"], textarea, select {
+      width: 100%;
+      background: #0a0f1c;
+      border: 1px solid #2d3e63;
+      color: #fff;
+      padding: 11px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: 'Chakra Petch', sans-serif;
+      outline: none;
+      transition: border 0.2s;
+    }
+    input:focus, textarea:focus {
+      border-color: var(--gold);
+    }
+
+    .pin-input {
+      text-align: center;
+      font-size: 20px !important;
+      font-weight: 700;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+    }
+
+    /* BUTTONS */
+    .btn {
+      width: 100%;
+      padding: 12px 16px;
+      border: none;
+      clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: transform 0.12s, filter 0.15s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-transform: uppercase;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .btn-gold {
+      background: linear-gradient(135deg, #ffd633, #e68a00);
+      color: #0b0e14;
+      box-shadow: 0 4px 16px rgba(255, 180, 0, 0.25);
+    }
+    .btn-blue {
+      background: linear-gradient(135deg, #00d2ff, #0072ff);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(0, 150, 255, 0.25);
+    }
+    .btn-red {
+      background: linear-gradient(135deg, #e11d48, #9f1239);
+      color: #fff;
+    }
+    .btn-dark {
+      background: #1c2740;
+      color: #e2e8f0;
+      border: 1px solid #334155;
+    }
+
+    /* ALERT BOX */
+    .alert-box {
+      display: none;
+      background: rgba(255, 42, 75, 0.14);
+      border: 1px solid var(--red);
+      color: #ffd6de;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+    .alert-box.show { display: block; }
+
+    /* CHARACTER SELECTION */
+    .char-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    @media (max-width: 680px) {
+      .char-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .char-card {
+      background: linear-gradient(180deg, #131e36, #0a101f);
+      border: 2px solid #283759;
+      padding: 8px 6px 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s;
+      position: relative;
+      clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+    }
+    .char-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--c);
+    }
+    .char-card.sel {
+      border-color: var(--c);
+      box-shadow: 0 0 18px rgba(0, 210, 255, 0.25), inset 0 0 16px rgba(255, 255, 255, 0.06);
+      background: linear-gradient(180deg, #1b2c4f, #0b1224);
+    }
+    .char-card.sel::after {
+      content: "SIAP!";
+      position: absolute;
+      top: 5px;
+      right: 8px;
+      font: 900 9px Orbitron, sans-serif;
+      color: var(--c);
+    }
+    .char-card canvas {
+      width: 100%;
+      height: 145px;
+      display: block;
+    }
+    .char-name {
+      font: 900 13px Orbitron, sans-serif;
+      color: var(--c);
+      margin-top: 2px;
+    }
+    .char-weapon {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .char-info {
+      font-size: 12.5px;
+      line-height: 1.5;
+      color: #dbeafe;
+      background: #0a101f;
+      border-left: 3px solid var(--gold);
+      padding: 8px 12px;
+      min-height: 40px;
+    }
+
+    /* LOBBY */
+    .room-banner {
+      background: linear-gradient(90deg, #14203b, #172544);
+      border: 1px solid var(--gold);
+      border-radius: 10px;
+      padding: 14px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .pin-display {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 26px;
+      font-weight: 900;
+      color: var(--gold);
+      letter-spacing: 4px;
+    }
+
+    .player-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .player-chip {
+      background: #162138;
+      border: 1px solid #2c3d61;
+      border-radius: 10px;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .player-chip.host { border-color: var(--gold); }
+
+    .avatar-circle {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 14px;
+      color: #000;
+      flex-shrink: 0;
+    }
+
+    /* BRACKET VIEW */
+    .match-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 10px;
+    }
+
+    .match-card {
+      background: #131c30;
+      border: 1px solid #283759;
+      border-radius: 10px;
+      padding: 12px;
+      position: relative;
+    }
+    .match-card.active-match {
+      border-color: var(--gold);
+      box-shadow: 0 0 15px rgba(255, 204, 0, 0.2);
+    }
+
+    .match-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px 8px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .match-row.winner {
+      background: rgba(0, 230, 118, 0.14);
+      color: var(--green);
+    }
+    .match-row.loser {
+      opacity: 0.5;
+      text-decoration: line-through;
+    }
+
+    /* ARENA CANVAS & HUD */
+    .arena-wrapper {
+      background: #080d18;
+      border: 2px solid #2b3c61;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 12px;
+      position: relative;
+    }
+
+    .tekken-hud {
+      padding: 10px 12px;
+      background: linear-gradient(180deg, rgba(6, 10, 19, 0.95), rgba(14, 22, 38, 0.85));
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid #1e2d4a;
+    }
+
+    .fighter-hud {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .fighter-hud.p2 { text-align: right; }
+
+    .fighter-name {
+      font-family: 'Chakra Petch', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      text-transform: uppercase;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .hp-track {
+      height: 16px;
+      background: #172036;
+      border: 2px solid #e2e8f0;
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+    .hp-fill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, #00e676, #ffcc00);
+      transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .fighter-hud.p2 .hp-fill {
+      float: right;
+      background: linear-gradient(270deg, #00e676, #ffcc00);
+    }
+
+    .timer-box {
+      background: #0b1120;
+      border: 2px solid var(--gold);
+      color: var(--gold);
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: 18px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      min-width: 52px;
+      text-align: center;
+    }
+
+    canvas#fightCanvas {
+      width: 100%;
+      height: 255px;
+      display: block;
+      background: #0a1120;
+    }
+
+    /* SPECIAL MOVE OVERLAY */
+    #specialOverlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 5;
+      overflow: hidden;
+    }
+    #specialOverlay.go {
+      display: flex;
+      animation: spFlash 1.4s ease-out forwards;
+    }
+    #specialOverlay::before {
+      content: "";
+      position: absolute;
+      inset: -30%;
+      background: repeating-conic-gradient(from 0deg at 50% 50%, var(--sc) 0 2.5deg, transparent 2.5deg 14deg);
+      opacity: 0.22;
+      animation: spin 1.4s linear;
+    }
+    @keyframes spin {
+      to { transform: rotate(22deg) scale(1.25); }
+    }
+    @keyframes spFlash {
+      0% { background: rgba(255, 255, 255, 0.45); }
+      15% { background: rgba(6, 12, 26, 0.58); }
+      80% { background: rgba(6, 12, 26, 0.38); }
+      100% { background: transparent; }
+    }
+    .sp-name {
+      position: relative;
+      font: 900 clamp(18px, 4.8vw, 34px) Orbitron, sans-serif;
+      font-style: italic;
+      color: #fff;
+      text-shadow: 0 0 16px var(--sc), 2px 2px 0 #000;
+      transform: skewX(-10deg);
+      animation: spPop 1.4s cubic-bezier(.2, 1.5, .4, 1) forwards;
+      text-align: center;
+      padding: 0 10px;
+    }
+    .sp-sub {
+      position: relative;
+      font: 700 11px 'Chakra Petch', sans-serif;
+      letter-spacing: 3px;
+      color: var(--sc);
+      margin-bottom: 4px;
+      animation: spPop 1.4s forwards;
+    }
+    @keyframes spPop {
+      0% { transform: skewX(-10deg) scale(2.4); opacity: 0; }
+      18% { transform: skewX(-10deg) scale(1); opacity: 1; }
+      85% { opacity: 1; }
+      100% { transform: skewX(-10deg) scale(1.06); opacity: 0; }
+    }
+
+    /* QUESTION BOX */
+    .question-panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+    }
+
+    .q-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: var(--gold);
+      font-weight: 700;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    .q-passage {
+      background: #090e1a;
+      border-left: 3px solid var(--blue);
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 13.5px;
+      line-height: 1.55;
+      color: #e2e8f0;
+      margin-bottom: 10px;
+      user-select: text;
+    }
+
+    .q-prompt {
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 10px;
+      color: #fff;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    @media (max-width: 600px) {
+      .options-grid { grid-template-columns: 1fr; }
+    }
+
+    .opt-btn {
+      background: #162138;
+      border: 1px solid #2e4066;
+      color: #f8fafc;
+      text-align: left;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .opt-btn:hover:not(:disabled) {
+      border-color: var(--gold);
+      background: #1f2e4d;
+    }
+    .opt-btn.correct {
+      background: rgba(0, 230, 118, 0.2) !important;
+      border-color: var(--green) !important;
+      color: #fff;
+    }
+    .opt-btn.wrong {
+      background: rgba(255, 42, 75, 0.2) !important;
+      border-color: var(--red) !important;
+    }
+    .opt-btn:disabled { cursor: default; }
+
+    .opt-key {
+      background: #0c1324;
+      color: var(--gold);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    .explanation-box {
+      display: none;
+      margin-top: 10px;
+      padding: 10px 12px;
+      background: rgba(0, 210, 255, 0.1);
+      border: 1px solid var(--blue);
+      border-radius: 8px;
+      font-size: 12.5px;
+      line-height: 1.5;
+      color: #dbeafe;
+    }
+    .explanation-box.show { display: block; }
+
+    /* PODIUM & LEADERBOARD */
+    .podium-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 12px;
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    .podium-col {
+      flex: 1;
+      max-width: 150px;
+      background: #162138;
+      border: 1px solid #2e4066;
+      border-radius: 10px 10px 4px 4px;
+      padding: 12px 8px;
+    }
+    .podium-col.first {
+      border-color: var(--gold);
+      background: linear-gradient(180deg, rgba(255, 204, 0, 0.18), #162138);
+      padding-top: 22px;
+    }
+
+    table.score-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 13px;
+    }
+    table.score-table th, table.score-table td {
+      padding: 10px 8px;
+      border-bottom: 1px solid #23304d;
+      text-align: left;
+    }
+    table.score-table th {
+      color: var(--gold);
+      font-family: 'Chakra Petch', sans-serif;
+      text-transform: uppercase;
+      font-size: 12px;
+    }
+
+    /* MODAL */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-backdrop.show { display: flex; }
+    .modal-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--gold);
+      border-radius: 12px;
+      max-width: 480px;
+      width: 100%;
+      padding: 18px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <span class="brand-badge">CUP EDITION</span>
+      <span class="brand-title arcade-font">TEKKEN WACANA</span>
+    </div>
+    <div class="status-pill" id="fbStatusPill" onclick="openConfigModal()" title="Klik untuk cek koneksi Firebase">
+      <span class="status-dot" id="fbDot"></span>
+      <span id="fbStatusText">MENGHUBUNGKAN...</span>
+    </div>
+  </header>
+
+  <main>
+    <!-- SCREEN 1: HOME / JOIN OR CREATE -->
+    <section id="screenHome" class="screen active">
+      <div class="hero-title">
+        <h1>TOURNAMENT OF TEXT</h1>
+        <p>Duel Edukasi Paragraf & Wacana Real-Time • Sistem Gugur & Papan Skor Akhir</p>
+      </div>
+
+      <div id="homeAlert" class="alert-box"></div>
+
+      <div class="card-box" style="margin-bottom: 14px;">
+        <h3>🎮 PILIH KARAKTER PETARUNG</h3>
+        <div class="char-grid" id="charGrid"></div>
+        <div class="char-info" id="charInfo">Pilih salah satu karakter dulu sebelum masuk arena. Jawab benar = jurus spesial keluar!</div>
+      </div>
+
+      <div class="grid-2">
+        <!-- BUAT ROOM -->
+        <div class="card-box">
+          <h3>👑 BUAT TURNAMEN (HOST)</h3>
+          <div>
+            <label>Nama Petarung Kamu</label>
+            <input type="text" id="hostNameInput" placeholder="Contoh: Wisnu" maxlength="16" />
+          </div>
+          <button class="btn btn-gold" id="btnCreateRoom" onclick="createOnlineRoom()">
+            ⚡ BUAT ROOM ONLINE
+          </button>
+        </div>
+
+        <!-- GABUNG ROOM -->
+        <div class="card-box">
+          <h3>🥊 GABUNG TURNAMEN</h3>
+          <div>
+            <label>Nama Petarung Kamu</label>
+            <input type="text" id="joinNameInput" placeholder="Contoh: Adit" maxlength="16" />
+          </div>
+          <div>
+            <label>Kode PIN Room (6 Karakter)</label>
+            <input type="text" id="joinPinInput" class="pin-input" placeholder="ABC123" maxlength="6" />
+          </div>
+          <button class="btn btn-blue" id="btnJoinRoom" onclick="joinOnlineRoom()">
+            🚀 MASUK ARENA
+          </button>
+        </div>
+      </div>
+
+      <div style="margin-top: 14px; text-align: center;">
+        <button class="btn btn-dark" onclick="startOfflineBotCup()">
+          🤖 SIMULASI BOT CUP (TES OFFLINE TANPA INTERNET)
+        </button>
+      </div>
+    </section>
+
+    <!-- SCREEN 2: LOBBY -->
+    <section id="screenLobby" class="screen">
+      <div class="panel">
+        <div class="room-banner">
+          <div>
+            <div style="font-size: 11px; color: var(--text-muted); font-weight: 700;">KODE PIN TURNAMEN</div>
+            <div class="pin-display" id="lobbyPinCode">------</div>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn btn-dark" style="width: auto; padding: 8px 12px; font-size: 11px;" onclick="copyRoomPin()">
+              📋 SALIN PIN
+            </button>
+            <button class="btn btn-red" style="width: auto; padding: 8px 12px; font-size: 11px;" onclick="leaveRoom()">
+              KELUAR
+            </button>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h3 style="font-size: 14px;">PESERTA TERDAFTAR (<span id="playerCount">0</span>)</h3>
+          <span style="font-size: 12px; color: var(--text-muted);" id="lobbyModeLabel">Mode Online</span>
+        </div>
+
+        <div class="player-grid" id="lobbyPlayerList"></div>
+
+        <div id="hostControls" style="margin-top: 16px; display: none;">
+          <button class="btn btn-gold" id="btnStartTournament" onclick="startTournament()">
+            🔥 ACAK LAWAN & MULAI TURNAMEN
+          </button>
+          <p style="font-size: 11.5px; color: var(--text-muted); text-align: center; margin-top: 8px;">
+            Minimal 2 pemain untuk memulai. Sistem akan mengacak bagan pertandingan secara otomatis.
+          </p>
+        </div>
+
+        <div id="guestWaitingMsg" style="display: none; text-align: center; padding: 14px; color: var(--gold); font-size: 13px; font-weight: 600;">
+          ⏳ Menunggu Host mengacak lawan & memulai turnamen...
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN 3: BRACKET / BAGAN TURNAMEN -->
+    <section id="screenBracket" class="screen">
+      <div class="panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+          <div>
+            <span class="brand-badge" id="roundBadge">BABAK 1</span>
+            <h2 style="font-size: 18px; margin-top: 4px;">BAGAN PERTANDINGAN</h2>
+          </div>
+          <div id="bracketActionArea"></div>
+        </div>
+
+        <div id="bracketContainer" style="margin-top: 12px;"></div>
+      </div>
+    </section>
+
+    <!-- SCREEN 4: ARENA PERTARUNGAN TEKKEN -->
+    <section id="screenArena" class="screen">
+      <div class="arena-wrapper">
+        <div class="tekken-hud">
+          <div class="fighter-hud p1">
+            <div class="fighter-name" id="p1NameHud" style="color: var(--blue);">PLAYER 1</div>
+            <div class="hp-track"><div class="hp-fill" id="p1HpBar"></div></div>
+          </div>
+
+          <div class="timer-box" id="battleTimer">20</div>
+
+          <div class="fighter-hud p2">
+            <div class="fighter-name" id="p2NameHud" style="color: var(--gold);">PLAYER 2</div>
+            <div class="hp-track"><div class="hp-fill" id="p2HpBar"></div></div>
+          </div>
+        </div>
+
+        <canvas id="fightCanvas"></canvas>
+        <div id="specialOverlay"><div class="sp-sub" id="spSub"></div><div class="sp-name" id="spName"></div></div>
+      </div>
+
+      <!-- PANEL SOAL / STATUS MENONTON -->
+      <div class="question-panel" id="battleQuestionPanel">
+        <div class="q-meta">
+          <span id="qCategory">KATEGORI: PARAGRAF DEDUKTIF</span>
+          <span id="qStep">RONDE 1</span>
+        </div>
+        <div class="q-passage" id="qPassage">Memuat teks wacana...</div>
+        <div class="q-prompt" id="qPrompt">Pertanyaan...</div>
+        <div class="options-grid" id="qOptions"></div>
+        <div class="explanation-box" id="qExplanation"></div>
+      </div>
+
+      <div class="panel" id="spectatorBanner" style="display: none; text-align: center; margin-top: 10px;">
+        <h3 style="color: var(--gold); font-size: 14px;">👀 MODE PENONTON (LIVE MATCH)</h3>
+        <p style="font-size: 12.5px; color: var(--text-muted); margin-top: 4px;" id="spectatorStatusText">
+          Menyaksikan pertarungan berlangsung secara real-time...
+        </p>
+      </div>
+    </section>
+
+    <!-- SCREEN 5: PODIUM & PAPAN SKOR AKHIR -->
+    <section id="screenLeaderboard" class="screen">
+      <div class="panel">
+        <div style="text-align: center;">
+          <span class="brand-badge">HASIL AKHIR TURNAMEN</span>
+          <h2 style="font-size: 22px; margin-top: 6px; color: var(--gold);">🏆 PAPAN SKOR JUARA</h2>
+        </div>
+
+        <div class="podium-wrap" id="podiumContainer"></div>
+
+        <div style="overflow-x: auto;">
+          <table class="score-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Petarung</th>
+                <th>Menang</th>
+                <th>Akurasi</th>
+                <th>Skor Akhir</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboardBody"></tbody>
+          </table>
+        </div>
+
+        <div style="margin-top: 18px;">
+          <button class="btn btn-gold" onclick="leaveRoom()">🔄 KEMBALI KE MENU UTAMA</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL INFO CONFIG -->
+  <div class="modal-backdrop" id="configModal">
+    <div class="modal-card">
+      <h3 style="color: var(--gold); font-size: 15px; margin-bottom: 8px;">⚙️ STATUS SERVER FIREBASE</h3>
+      <p style="font-size: 12.5px; color: var(--text-muted); line-height: 1.5; margin-bottom: 10px;">
+        Proyek tertanam: <strong style="color:#fff;">tekken-wacana</strong><br/>
+        Status saat ini: <strong id="modalStatusDetail" style="color:var(--green);">Memeriksa...</strong>
+      </p>
+      <div style="background:#0b0f19; padding:10px; border-radius:8px; font-size:11.5px; color:#cbd5e1; margin-bottom:12px;">
+        <strong>Checklist Wajib di Firebase Console:</strong><br/>
+        1. Buka <em>Build &rarr; Realtime Database</em> lalu klik <strong>Create Database</strong>.<br/>
+        2. Pada tab <strong>Rules</strong>, pastikan <code>".read": true</code> dan <code>".write": true</code>.<br/>
+        3. Buka web ini lewat link <code>https://...</code> (Netlify/GitHub), bukan dari file lokal <code>file://</code>.
+      </div>
+      <button class="btn btn-dark" onclick="closeConfigModal()">TUTUP</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getDatabase, ref, set, get, update, onValue
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+    // =========================================================
+    // 1. KONFIGURASI FIREBASE TERTANAM (PROYEK: tekken-wacana)
+    // =========================================================
+    const DEFAULT_FIREBASE_CONFIG = {
+      apiKey: "AIzaSyBZfSTUg9VyrWFp-JYxzzrQXgtKBtfQOEM",
+      authDomain: "tekken-wacana.firebaseapp.com",
+      databaseURL: "https://tekken-wacana-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "tekken-wacana",
+      storageBucket: "tekken-wacana.firebasestorage.app",
+      messagingSenderId: "450104193236",
+      appId: "1:450104193236:web:75efc010aa33a6ed0b0b41",
+      measurementId: "G-8VHJT8FW5K"
+    };
+
+    const FALLBACK_DB_URLS = [
+      "https://tekken-wacana-default-rtdb.asia-southeast1.firebasedatabase.app",
+      "https://tekken-wacana-default-rtdb.firebaseio.com"
+    ];
+
+    let db = null;
+    let isFirebaseReady = false;
+    let activeDbUrl = DEFAULT_FIREBASE_CONFIG.databaseURL;
+
+    // =========================================================
+    // 2. BANK SOAL PARAGRAF & WACANA (12 SOAL EDUKASI)
+    // =========================================================
+    const QUESTIONS = [
+      {
+        cat: "Paragraf Deduktif",
+        passage: "Pendidikan karakter merupakan fondasi utama dalam membentuk generasi yang berintegritas. Melalui pembiasaan nilai kejujuran dan tanggung jawab di sekolah, siswa tidak hanya cerdas secara akademik, tetapi juga tangguh secara moral.",
+        prompt: "Berdasarkan letak kalimat utamanya, paragraf tersebut termasuk jenis paragraf...",
+        options: ["Deduktif", "Induktif", "Ineratif", "Campuran"],
+        answer: 0,
+        explain: "Kalimat utama terletak di awal paragraf ('Pendidikan karakter merupakan fondasi utama...'), diikuti kalimat penjelas."
+      },
+      {
+        cat: "Paragraf Induktif",
+        passage: "Setiap pagi warga RT 04 membersihkan selokan dari tumpukan sampah plastik. Bak sampah terpilah juga disediakan di setiap sudut jalan. Dengan kebiasaan disiplin tersebut, lingkungan kampung kini bebas dari banjir dan tampak asri.",
+        prompt: "Jenis penalaran yang digunakan dalam paragraf di atas adalah...",
+        options: ["Deduktif", "Induktif", "Deskriptif", "Naratif"],
+        answer: 1,
+        explain: "Paragraf memaparkan fakta-fakta khusus terlebih dahulu lalu ditutup simpulan umum di akhir kalimat."
+      },
+      {
+        cat: "Kohesi Gramatikal (Rujukan)",
+        passage: "Rani membeli novel sejarah di toko buku kemarin sore. Buku itu langsung dibacanya hingga larut malam karena alurnya sangat menegangkan.",
+        prompt: "Kata '-nya' pada kata 'dibacanya' merujuk pada...",
+        options: ["Novel sejarah", "Toko buku", "Rani", "Alur cerita"],
+        answer: 2,
+        explain: "Klitika '-nya' berfungsi sebagai pronomina persona ketiga tunggal yang merujuk kembali pada subjek 'Rani' (anafora)."
+      },
+      {
+        cat: "Kalimat Sumbang",
+        passage: "(1) Kopi robusta memiliki kandungan kafein lebih tinggi dibanding arabika. (2) Cita rasanya cenderung pahit dengan aroma kacang yang kuat. (3) Harga beras di pasar induk mengalami kenaikan minggu ini. (4) Oleh karena itu, robusta sering dipilih sebagai bahan dasar es kopi susu.",
+        prompt: "Kalimat sumbang yang merusak kepaduan (koherensi) paragraf terdapat pada nomor...",
+        options: ["(1)", "(2)", "(3)", "(4)"],
+        answer: 2,
+        explain: "Kalimat (3) membahas harga beras yang menyimpang dari topik utama mengenai karakteristik kopi robusta."
+      },
+      {
+        cat: "Paragraf Eksposisi",
+        passage: "Fotosintesis adalah proses biokimia pembentukan zat makanan seperti karbohidrat yang dilakukan oleh tumbuhan hijau dengan bantuan energi cahaya matahari melalui klorofil.",
+        prompt: "Tujuan utama jenis paragraf di atas adalah...",
+        options: ["Membujuk pembaca membeli tanaman", "Memaparkan informasi/definisi secara objektif", "Menceritakan kronologi peristiwa", "Melukiskan keindahan alam"],
+        answer: 1,
+        explain: "Paragraf eksposisi bertujuan menjelaskan konsep, proses, atau informasi faktual secara lugas tanpa memengaruhi emosi."
+      },
+      {
+        cat: "Konjungsi Antarkalimat",
+        passage: "Cuaca ekstrem melanda wilayah pesisir sejak dini hari. ________, aktivitas penyeberangan kapal feri terpaksa ditunda demi keselamatan penumpang.",
+        prompt: "Konjungsi antarkalimat yang paling tepat untuk melengkapi wacana tersebut adalah...",
+        options: ["Meskipun demikian", "Oleh karena itu", "Sebaliknya", "Selain itu"],
+        answer: 1,
+        explain: "Hubungan antara kalimat pertama dan kedua adalah sebab-akibat, sehingga konjungsi yang tepat adalah 'Oleh karena itu'."
+      },
+      {
+        cat: "Paragraf Persuasi",
+        passage: "Mengurangi penggunaan kantong plastik sekali pakai adalah langkah kecil yang berdampak besar bagi kelestarian laut kita. Mari mulai bawa tas belanja kain sendiri setiap kali berbelanja!",
+        prompt: "Ciri utama yang menandai paragraf tersebut sebagai paragraf persuasi adalah...",
+        options: ["Adanya data statistik", "Adanya ajakan/imbauan ('Mari mulai...')", "Adanya urutan waktu", "Adanya pertentangan pendapat"],
+        answer: 1,
+        explain: "Paragraf persuasi ditandai dengan kata ajakan halus seperti 'mari', 'ayo', atau imbauan untuk melakukan sesuatu."
+      },
+      {
+        cat: "Kohesi Leksikal (Sinonim)",
+        passage: "Tim penyelamat segera mengevakuasi para pendaki yang terjebak badai. Proses penyelamatan tersebut berlangsung dramatis di tengah kabut tebal.",
+        prompt: "Hubungan makna antara kata 'mengevakuasi' dan 'penyelamatan' dalam wacana di atas membentuk kohesi...",
+        options: ["Antonimi", "Sinonim / Padanan kata", "Hiponimi", "Elipsis"],
+        answer: 1,
+        explain: "Penggunaan kata 'penyelamatan' menggantikan 'mengevakuasi' untuk menjaga kepaduan makna tanpa pengulangan kaku."
+      },
+      {
+        cat: "Paragraf Campuran",
+        passage: "Olahraga rutin sangat bermanfaat bagi kesehatan jantung. Dengan berlari 30 menit setiap hari, sirkulasi darah menjadi lancar dan tekanan darah stabil. Jadi, meluangkan waktu untuk berolahraga adalah investasi terbaik bagi jantung Anda.",
+        prompt: "Pola pengembangan gagasan utama pada paragraf tersebut adalah...",
+        options: ["Deduktif-Induktif (Campuran)", "Ineratif", "Naratif", "Kronologis"],
+        answer: 0,
+        explain: "Gagasan utama dinyatakan di awal paragraf lalu ditegaskan kembali pada kalimat simpulan di akhir paragraf."
+      },
+      {
+        cat: "Paragraf Deskripsi",
+        passage: "Kabut tipis menyelimuti puncak bukit yang hijau. Udara pagi terasa menusuk kulit, berpadu dengan aroma tanah basah dan gemericik air sungai di kejauhan.",
+        prompt: "Paragraf deskripsi di atas melibatkan pancaindra secara dominan pada aspek...",
+        options: ["Penglihatan, peraba, penciuman, pendengaran", "Pengecap dan penglihatan saja", "Logika dan argumentasi", "Alur dan penokohan"],
+        answer: 0,
+        explain: "Deskripsi melukiskan objek seolah-olah pembaca melihat, merasakan dingin, mencium aroma tanah, dan mendengar gemericik air."
+      },
+      {
+        cat: "Elipsis (Pelesapan)",
+        passage: "Ayah membaca koran di teras depan, sedangkan Ibu (___) majalah di ruang keluarga.",
+        prompt: "Unsur yang dilesapkan (elipsis) pada bagian rumpang kalimat majemuk tersebut adalah...",
+        options: ["membeli", "membaca", "menulis", "menyimpan"],
+        answer: 1,
+        explain: "Predikat 'membaca' dihilangkan pada klausa kedua karena sudah disebut pada klausa pertama agar kalimat efektif."
+      },
+      {
+        cat: "Paragraf Argumentasi",
+        passage: "Berdasarkan data BPS tahun ini, sektor industri pengolahan menyumbang lebih dari 18% terhadap PDB nasional. Hal ini membuktikan bahwa hilirisasi industri mampu memperkuat ketahanan ekonomi negara.",
+        prompt: "Unsur terpenting yang memperkuat paragraf argumentasi di atas adalah...",
+        options: ["Tokoh dan latar", "Fakta empiris dan data statistik", "Majaz personifikasi", "Ajakan emosional"],
+        answer: 1,
+        explain: "Argumentasi meyakinkan pembaca melalui pembuktian logis yang didukung fakta, angka, atau data empiris."
+      }
+    ];
+
+    // =========================================================
+    // 3. STATE GLOBAL APLIKASI
+    // =========================================================
+    const state = {
+      mode: "online",
+      roomPin: null,
+      playerId: "p_" + Math.random().toString(36).substring(2, 9),
+      playerName: "",
+      isHost: false,
+      roomData: null,
+      unsubscribeRoom: null,
+      currentMatchId: null,
+      questionTimer: null,
+      timeLeft: 20,
+      hasAnsweredCurrent: false,
+      botTimer: null,
+      lastAnimKey: ""
+    };
+
+    // =========================================================
+    // 4. INISIALISASI FIREBASE DENGAN AUTO-FALLBACK & TIMEOUT
+    // =========================================================
+    function setFbStatus(type, text, detail) {
+      const dot = document.getElementById("fbDot");
+      const label = document.getElementById("fbStatusText");
+      const modalDetail = document.getElementById("modalStatusDetail");
+      dot.className = "status-dot " + (type === "online" ? "online" : type === "error" ? "error" : "");
+      label.textContent = text;
+      if (modalDetail) {
+        modalDetail.textContent = detail || text;
+        modalDetail.style.color = type === "online" ? "#00e676" : type === "error" ? "#ff2a4b" : "#ffcc00";
+      }
+    }
+
+    function withTimeout(promise, ms = 6000) {
+      return Promise.race([
+        promise,
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("TIMEOUT: Koneksi ke server Firebase habis waktu. Pastikan Realtime Database sudah dibuat di Firebase Console.")), ms)
+        )
+      ]);
+    }
+
+    async function initFirebase() {
+      if (window.location.protocol === "file:") {
+        setFbStatus("error", "MODE FILE LOKAL", "Browser memblokir Firebase di file://. Upload ke Netlify/GitHub atau pakai Simulasi Bot.");
+      }
+
+      for (const url of FALLBACK_DB_URLS) {
+        try {
+          const cfg = { ...DEFAULT_FIREBASE_CONFIG, databaseURL: url };
+          const app = initializeApp(cfg, "app_" + btoa(url).slice(0, 8));
+          const testDb = getDatabase(app);
+
+          await withTimeout(get(ref(testDb, ".info/connected")), 4000);
+          db = testDb;
+          activeDbUrl = url;
+          isFirebaseReady = true;
+          setFbStatus("online", "ONLINE • READY", "Terhubung ke " + url);
+          return;
+        } catch (err) {
+          console.warn("Gagal cek URL:", url, err.message);
+        }
+      }
+
+      try {
+        const app = initializeApp(DEFAULT_FIREBASE_CONFIG);
+        db = getDatabase(app);
+        isFirebaseReady = true;
+        setFbStatus("online", "SIAP ONLINE", "Koneksi siap digunakan (" + DEFAULT_FIREBASE_CONFIG.projectId + ")");
+      } catch (e) {
+        setFbStatus("error", "GAGAL INIT", e.message);
+      }
+    }
+
+    initFirebase();
+
+    // =========================================================
+    // 5. NAVIGASI & UI HELPERS
+    // =========================================================
+    function showScreen(id) {
+      document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+    }
+
+    function showHomeAlert(msg) {
+      const box = document.getElementById("homeAlert");
+      if (!msg) {
+        box.classList.remove("show");
+        return;
+      }
+      box.innerHTML = msg;
+      box.classList.add("show");
+    }
+
+    window.openConfigModal = () => document.getElementById("configModal").classList.add("show");
+    window.closeConfigModal = () => document.getElementById("configModal").classList.remove("show");
+
+    function generatePin() {
+      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      let res = "";
+      for (let i = 0; i < 6; i++) res += chars[Math.floor(Math.random() * chars.length)];
+      return res;
+    }
+
+    function getAvatarColor(idx) {
+      const colors = ["#00d2ff", "#ffcc00", "#00e676", "#38bdf8", "#b388ff", "#ff9100", "#1de9b6", "#ea80fc"];
+      return colors[idx % colors.length];
+    }
+
+    // =========================================================
+    // 6. BUAT & GABUNG ROOM ONLINE (FIREBASE)
+    // =========================================================
+    window.createOnlineRoom = async function () {
+      showHomeAlert("");
+      const name = document.getElementById("hostNameInput").value.trim();
+      if (!myChar) { showHomeAlert("⚠️ Pilih <strong>karakter</strong> kamu dulu!"); return; }
+      if (!name) {
+        showHomeAlert("⚠️ Masukkan <strong>Nama Petarung</strong> kamu terlebih dahulu!");
+        return;
+      }
+      if (!db) {
+        showHomeAlert("⚠️ Koneksi Firebase belum siap. Pastikan dibuka lewat link <code>https://</code> dan internet aktif.");
+        return;
+      }
+
+      const btn = document.getElementById("btnCreateRoom");
+      btn.disabled = true;
+      btn.textContent = "⏳ MEMBUAT ROOM...";
+
+      try {
+        const pin = generatePin();
+        const initialRoom = {
+          pin,
+          hostId: state.playerId,
+          status: "lobby",
+          roundNumber: 1,
+          createdAt: Date.now(),
+          players: {
+            [state.playerId]: {
+              id: state.playerId,
+              name,
+              isHost: true,
+              char: myChar,
+              wins: 0,
+              correct: 0,
+              answered: 0,
+              points: 0,
+              eliminated: false
+            }
+          },
+          matches: {},
+          activeMatchId: null
+        };
+
+        await withTimeout(set(ref(db, `rooms/${pin}`), initialRoom), 6500);
+
+        state.mode = "online";
+        state.roomPin = pin;
+        state.playerName = name;
+        state.isHost = true;
+
+        listenToOnlineRoom(pin);
+      } catch (err) {
+        console.error(err);
+        let detail = err.message;
+        if (detail.includes("PERMISSION_DENIED")) {
+          detail = "<strong>PERMISSION_DENIED:</strong> Izin database ditolak. Buka Firebase Console &rarr; Realtime Database &rarr; tab <strong>Rules</strong>, lalu ubah <code>.read</code> dan <code>.write</code> menjadi <code>true</code>.";
+        } else if (detail.includes("TIMEOUT")) {
+          detail = "<strong>TIMEOUT:</strong> Server tidak merespons. Pastikan kamu sudah klik <strong>Create Database</strong> di menu Realtime Database proyek <code>tekken-wacana</code>.";
+        }
+        showHomeAlert("❌ Gagal membuat room:<br/>" + detail);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "⚡ BUAT ROOM ONLINE";
+      }
+    };
+
+    window.joinOnlineRoom = async function () {
+      showHomeAlert("");
+      const name = document.getElementById("joinNameInput").value.trim();
+      const pin = document.getElementById("joinPinInput").value.trim().toUpperCase();
+      if (!myChar) { showHomeAlert("⚠️ Pilih <strong>karakter</strong> kamu dulu!"); return; }
+
+      if (!name || pin.length < 4) {
+        showHomeAlert("⚠️ Isi <strong>Nama Petarung</strong> dan <strong>Kode PIN Room</strong> dengan benar!");
+        return;
+      }
+      if (!db) {
+        showHomeAlert("⚠️ Koneksi Firebase belum siap.");
+        return;
+      }
+
+      const btn = document.getElementById("btnJoinRoom");
+      btn.disabled = true;
+      btn.textContent = "⏳ MASUK KE ROOM...";
+
+      try {
+        const snap = await withTimeout(get(ref(db, `rooms/${pin}`)), 6500);
+        if (!snap.exists()) {
+          showHomeAlert(`❌ Room dengan PIN <strong>${pin}</strong> tidak ditemukan!`);
+          return;
+        }
+        const room = snap.val();
+        if (room.status !== "lobby") {
+          showHomeAlert("⚠️ Turnamen di room ini sudah dimulai!");
+          return;
+        }
+
+        await withTimeout(set(ref(db, `rooms/${pin}/players/${state.playerId}`), {
+          id: state.playerId,
+          name,
+          isHost: false,
+          char: myChar,
+          wins: 0,
+          correct: 0,
+          answered: 0,
+          points: 0,
+          eliminated: false
+        }), 6500);
+
+        state.mode = "online";
+        state.roomPin = pin;
+        state.playerName = name;
+        state.isHost = false;
+
+        listenToOnlineRoom(pin);
+      } catch (err) {
+        showHomeAlert("❌ Gagal bergabung: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "🚀 MASUK ARENA";
+      }
+    };
+
+    function listenToOnlineRoom(pin) {
+      if (state.unsubscribeRoom) state.unsubscribeRoom();
+      const roomRef = ref(db, `rooms/${pin}`);
+      state.unsubscribeRoom = onValue(roomRef, (snapshot) => {
+        if (!snapshot.exists()) return;
+        state.roomData = snapshot.val();
+        syncUiWithRoomState();
+      });
+    }
+
+    // =========================================================
+    // 7. MODE SIMULASI BOT CUP (OFFLINE DEMO INSTAN)
+    // =========================================================
+    window.startOfflineBotCup = function () {
+      const customName = document.getElementById("hostNameInput").value.trim() || "Wisnu";
+      if (!myChar) { showHomeAlert("⚠️ Pilih <strong>karakter</strong> kamu dulu!"); return; }
+      const pin = "BOTCUP";
+      state.mode = "offline";
+      state.roomPin = pin;
+      state.playerName = customName;
+      state.isHost = true;
+
+      state.roomData = {
+        pin,
+        hostId: state.playerId,
+        status: "lobby",
+        roundNumber: 1,
+        players: {
+          [state.playerId]: { id: state.playerId, name: customName, isHost: true, char: myChar, wins: 0, correct: 0, answered: 0, points: 0, eliminated: false },
+          bot_1: { id: "bot_1", name: "Rival Sastra (AI)", isBot: true, char: "archer", wins: 0, correct: 0, answered: 0, points: 0, eliminated: false },
+          bot_2: { id: "bot_2", name: "Master Kohesi (AI)", isBot: true, char: "fist", wins: 0, correct: 0, answered: 0, points: 0, eliminated: false },
+          bot_3: { id: "bot_3", name: "Ratu Wacana (AI)", isBot: true, char: "staff", wins: 0, correct: 0, answered: 0, points: 0, eliminated: false }
+        },
+        matches: {},
+        activeMatchId: null
+      };
+      syncUiWithRoomState();
+    };
+
+    async function saveRoomChanges(updates) {
+      if (state.mode === "offline") {
+        for (const [path, val] of Object.entries(updates)) {
+          const keys = path.split("/");
+          let cur = state.roomData;
+          for (let i = 0; i < keys.length - 1; i++) {
+            if (!cur[keys[i]]) cur[keys[i]] = {};
+            cur = cur[keys[i]];
+          }
+          cur[keys[keys.length - 1]] = val;
+        }
+        syncUiWithRoomState();
+      } else {
+        await update(ref(db, `rooms/${state.roomPin}`), updates);
+      }
+    }
+
+    window.copyRoomPin = function () {
+      if (!state.roomPin) return;
+      navigator.clipboard?.writeText(state.roomPin);
+      alert("Kode PIN disalin: " + state.roomPin);
+    };
+
+    window.leaveRoom = function () {
+      clearInterval(state.questionTimer);
+      clearTimeout(state.botTimer);
+      if (state.unsubscribeRoom) {
+        state.unsubscribeRoom();
+        state.unsubscribeRoom = null;
+      }
+      state.roomData = null;
+      state.roomPin = null;
+      state.currentMatchId = null;
+      showScreen("screenHome");
+    };
+
+    // =========================================================
+    // 8. SINKRONISASI UI & PENGACAK BAGAN TURNAMEN
+    // =========================================================
+    function syncUiWithRoomState() {
+      const room = state.roomData;
+      if (!room) return;
+
+      if (room.status === "lobby") {
+        renderLobby(room);
+        showScreen("screenLobby");
+      } else if (room.status === "bracket") {
+        renderBracket(room);
+        showScreen("screenBracket");
+      } else if (room.status === "fighting") {
+        renderArena(room);
+        showScreen("screenArena");
+      } else if (room.status === "finished") {
+        renderLeaderboard(room);
+        showScreen("screenLeaderboard");
+      }
+    }
+
+    function renderLobby(room) {
+      document.getElementById("lobbyPinCode").textContent = room.pin;
+      document.getElementById("lobbyModeLabel").textContent =
+        state.mode === "offline" ? "Mode Simulasi Bot" : "Online • Real-Time";
+
+      const players = Object.values(room.players || {});
+      document.getElementById("playerCount").textContent = players.length;
+
+      const list = document.getElementById("lobbyPlayerList");
+      list.innerHTML = "";
+      players.forEach((p, idx) => {
+        const div = document.createElement("div");
+        div.className = "player-chip" + (p.isHost ? " host" : "");
+        div.innerHTML = `
+          <div class="avatar-circle" style="background:${getAvatarColor(idx)}">${CHARS[p.char] ? CHARS[p.char].icon : p.name.charAt(0).toUpperCase()}</div>
+          <div style="overflow:hidden;">
+            <div style="font-weight:700; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.name}</div>
+            <div style="font-size:10.5px; color:${p.isHost ? 'var(--gold)' : 'var(--text-muted)'};">
+              ${(p.isHost ? "👑 " : p.isBot ? "🤖 " : "") + (CHARS[p.char] ? CHARS[p.char].name : "PETARUNG")}
+            </div>
+          </div>
+        `;
+        list.appendChild(div);
+      });
+
+      document.getElementById("hostControls").style.display = state.isHost ? "block" : "none";
+      document.getElementById("guestWaitingMsg").style.display = state.isHost ? "none" : "block";
+    }
+
+    function shuffleArray(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    window.startTournament = async function () {
+      const room = state.roomData;
+      const activePlayers = Object.values(room.players || {}).filter(p => !p.eliminated);
+      if (activePlayers.length < 2) {
+        alert("Minimal butuh 2 pemain di lobby untuk memulai turnamen!");
+        return;
+      }
+
+      const matches = buildRoundMatches(activePlayers, 1);
+      await saveRoomChanges({
+        status: "bracket",
+        roundNumber: 1,
+        matches,
+        activeMatchId: null
+      });
+    };
+
+    function buildRoundMatches(playersList, roundNum) {
+      const shuffled = shuffleArray(playersList);
+      const matches = {};
+      let matchIdx = 1;
+
+      for (let i = 0; i < shuffled.length; i += 2) {
+        const p1 = shuffled[i];
+        const p2 = shuffled[i + 1] || null;
+        const mId = `r${roundNum}_m${matchIdx++}`;
+
+        if (!p2) {
+          matches[mId] = {
+            id: mId,
+            round: roundNum,
+            p1Id: p1.id,
+            p1Name: p1.name,
+            p2Id: "BYE",
+            p2Name: "BYE (Lolos Otomatis)",
+            p1Hp: 100,
+            p2Hp: 0,
+            winnerId: p1.id,
+            status: "done",
+            qIndex: Math.floor(Math.random() * QUESTIONS.length),
+            qStep: 1
+          };
+        } else {
+          matches[mId] = {
+            id: mId,
+            round: roundNum,
+            p1Id: p1.id,
+            p1Name: p1.name,
+            p2Id: p2.id,
+            p2Name: p2.name,
+            p1Hp: 100,
+            p2Hp: 100,
+            winnerId: null,
+            status: "pending",
+            qIndex: Math.floor(Math.random() * QUESTIONS.length),
+            qStep: 1,
+            lastAction: null
+          };
+        }
+      }
+      return matches;
+    }
+
+    function renderBracket(room) {
+      const roundNum = room.roundNumber || 1;
+      document.getElementById("roundBadge").textContent = `BABAK ${roundNum}`;
+
+      const matches = Object.values(room.matches || {}).filter(m => m.round === roundNum);
+      const container = document.getElementById("bracketContainer");
+      container.innerHTML = `<div class="match-list" id="roundMatchList"></div>`;
+      const list = document.getElementById("roundMatchList");
+
+      matches.forEach((m, idx) => {
+        const p1Win = m.winnerId && m.winnerId === m.p1Id;
+        const p2Win = m.winnerId && m.winnerId === m.p2Id;
+        const card = document.createElement("div");
+        card.className = "match-card" + (m.status === "pending" ? " active-match" : "");
+        card.innerHTML = `
+          <div style="font-size:11px; color:var(--text-muted); margin-bottom:6px; display:flex; justify-content:space-between;">
+            <span>PARTAI #${idx + 1}</span>
+            <span style="color:${m.status === 'done' ? 'var(--green)' : 'var(--gold)'};">
+              ${m.status === "done" ? "SELESAI" : "MENUNGGU DUEL"}
+            </span>
+          </div>
+          <div class="match-row ${p1Win ? 'winner' : p2Win ? 'loser' : ''}">
+            <span>🥊 ${m.p1Name}</span>
+            <span>${p1Win ? "👑 WIN" : ""}</span>
+          </div>
+          <div class="match-row ${p2Win ? 'winner' : p1Win ? 'loser' : ''}">
+            <span>🥊 ${m.p2Name}</span>
+            <span>${p2Win ? "👑 WIN" : ""}</span>
+          </div>
+        `;
+        list.appendChild(card);
+      });
+
+      const actionArea = document.getElementById("bracketActionArea");
+      actionArea.innerHTML = "";
+
+      const nextPending = matches.find(m => m.status === "pending");
+      if (state.isHost) {
+        if (nextPending) {
+          const btn = document.createElement("button");
+          btn.className = "btn btn-gold";
+          btn.style.width = "auto";
+          btn.textContent = `⚔️ MULAI DUEL: ${nextPending.p1Name} VS ${nextPending.p2Name}`;
+          btn.onclick = () => launchMatch(nextPending.id);
+          actionArea.appendChild(btn);
+        } else {
+          const winners = matches.map(m => room.players[m.winnerId]).filter(Boolean);
+          const btn = document.createElement("button");
+          btn.className = "btn btn-blue";
+          btn.style.width = "auto";
+          if (winners.length <= 1) {
+            btn.textContent = "🏆 LIHAT PAPAN SKOR JUARA";
+            btn.onclick = () => saveRoomChanges({ status: "finished" });
+          } else {
+            btn.textContent = `🔥 LANJUT BABAK ${roundNum + 1} (${winners.length} BESAR)`;
+            btn.onclick = () => {
+              const nextMatches = buildRoundMatches(winners, roundNum + 1);
+              saveRoomChanges({
+                roundNumber: roundNum + 1,
+                matches: { ...room.matches, ...nextMatches }
+              });
+            };
+          }
+          actionArea.appendChild(btn);
+        }
+      } else {
+        actionArea.innerHTML = `<span style="font-size:12px; color:var(--gold);">⏳ Menunggu Host memulai pertandingan...</span>`;
+      }
+    }
+
+    // =========================================================
+    // 9. ARENA PERTARUNGAN & RENDER KARAKTER 2.5D ANTI-GEPENG
+    // =========================================================
+    const CHARS = {
+      archer: {
+        id: "archer",
+        name: "KIRANA",
+        icon: "🏹",
+        weapon: "Pemanah Neon",
+        main: "#0d9488",
+        mainDark: "#064e3b",
+        pants: "#134e4a",
+        glow: "#2dd4bf",
+        hair: "#10b981",
+        hairDark: "#047857",
+        skin: "#f6c9a5",
+        skinShade: "#d99b72",
+        move: "HUJAN PANAH NEON",
+        desc: "Pemanah lincah dengan panah energi. Jurus: HUJAN PANAH NEON — puluhan panah jatuh dari langit!"
+      },
+      sword: {
+        id: "sword",
+        name: "RONIN KAGE",
+        icon: "⚔️",
+        weapon: "Pedang Katana",
+        main: "#3b2868",
+        mainDark: "#1e123b",
+        pants: "#18182b",
+        glow: "#c084fc",
+        hair: "#f1f5f9",
+        hairDark: "#94a3b8",
+        skin: "#f1c29b",
+        skinShade: "#cf9368",
+        move: "TEBASAN BULAN SABIT",
+        desc: "Samurai bayangan bertempo cepat. Jurus: TEBASAN BULAN SABIT — satu tebasan membelah arena!"
+      },
+      fist: {
+        id: "fist",
+        name: "BARA",
+        icon: "👊",
+        weapon: "Tangan Kosong",
+        main: "#c2410c",
+        mainDark: "#7c2d12",
+        pants: "#1e293b",
+        glow: "#fb923c",
+        hair: "#f97316",
+        hairDark: "#9a3412",
+        skin: "#eab38f",
+        skinShade: "#c4845c",
+        move: "NAGA API MENGAMUK",
+        desc: "Petarung jalanan tanpa senjata. Jurus: NAGA API MENGAMUK — pukulan api penghancur!"
+      },
+      staff: {
+        id: "staff",
+        name: "VOLT",
+        icon: "⚡",
+        weapon: "Tongkat Petir",
+        main: "#1d4ed8",
+        mainDark: "#1e3a8a",
+        pants: "#0f172a",
+        glow: "#38bdf8",
+        hair: "#38bdf8",
+        hairDark: "#0284c7",
+        skin: "#f5cba7",
+        skinShade: "#d49c74",
+        move: "BADAI PETIR BIRU",
+        desc: "Penyihir hoodie bertongkat listrik. Jurus: BADAI PETIR BIRU — sambaran kilat beruntun!"
+      }
+    };
+
+    let myChar = null;
+
+    // Helper wajib: sinkronkan ukuran pixel canvas sesuai ukuran layar agar tidak gepeng
+    function syncCanvasResolution(canvas) {
+      const rect = canvas.getBoundingClientRect();
+      if (!rect.width || !rect.height) return null;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const targetW = Math.round(rect.width * dpr);
+      const targetH = Math.round(rect.height * dpr);
+      if (canvas.width !== targetW || canvas.height !== targetH) {
+        canvas.width = targetW;
+        canvas.height = targetH;
+      }
+      return { w: targetW, h: targetH, cssW: rect.width, cssH: rect.height };
+    }
+
+    window.selectChar = function (id) {
+      myChar = id;
+      document.querySelectorAll(".char-card").forEach(c => c.classList.toggle("sel", c.dataset.id === id));
+      const c = CHARS[id];
+      document.getElementById("charInfo").innerHTML = `<strong style="color:${c.glow}">${c.icon} ${c.name}</strong> — ${c.desc}`;
+      showHomeAlert("");
+    };
+
+    (function buildCharGrid() {
+      const g = document.getElementById("charGrid");
+      Object.values(CHARS).forEach(c => {
+        const d = document.createElement("div");
+        d.className = "char-card";
+        d.dataset.id = c.id;
+        d.style.setProperty("--c", c.glow);
+        d.innerHTML = `<canvas></canvas><div class="char-name">${c.name}</div><div class="char-weapon">${c.icon} ${c.weapon}</div>`;
+        d.onclick = () => selectChar(c.id);
+        g.appendChild(d);
+      });
+
+      let f = 0;
+      (function loop() {
+        f++;
+        if (document.getElementById("screenHome").classList.contains("active")) {
+          g.querySelectorAll(".char-card").forEach(card => {
+            const canvas = card.querySelector("canvas");
+            const dim = syncCanvasResolution(canvas);
+            if (!dim) return;
+            const cx = canvas.getContext("2d");
+            cx.clearRect(0, 0, dim.w, dim.h);
+
+            // Skala proporsional berbasis tinggi card (tinggi karakter ~145 unit virtual)
+            const scale = Math.min(dim.w / 145, dim.h / 155);
+            cx.save();
+            cx.translate(dim.w * 0.48, dim.h * 0.56);
+            cx.scale(scale, scale);
+            const isPreviewAtk = card.classList.contains("sel") && (f % 100 < 24);
+            drawFighter(cx, 0, 0, 1, CHARS[card.dataset.id], isPreviewAtk ? "attack" : "idle", f, true);
+            cx.restore();
+          });
+        }
+        requestAnimationFrame(loop);
+      })();
+    })();
+
+    const animState = {
+      p1Action: "idle",
+      p2Action: "idle",
+      shake: 0,
+      hitText: "",
+      hitTimer: 0,
+      c1: "sword",
+      c2: "archer",
+      sp: null
+    };
+
+    function triggerAttackAnim(side, dmgText, special) {
+      animState[side === 1 ? "p1Action" : "p2Action"] = "attack";
+      animState[side === 1 ? "p2Action" : "p1Action"] = "hurt";
+      animState.shake = special ? 20 : 11;
+      animState.hitText = dmgText;
+      animState.hitTimer = 55;
+      const ch = CHARS[side === 1 ? animState.c1 : animState.c2];
+      if (special && ch) {
+        animState.sp = { side, ch, t: 0 };
+        const ov = document.getElementById("specialOverlay");
+        ov.style.setProperty("--sc", ch.glow);
+        document.getElementById("spSub").textContent = ch.name + " • JURUS SPESIAL";
+        document.getElementById("spName").textContent = ch.move;
+        ov.classList.remove("go");
+        void ov.offsetWidth;
+        ov.classList.add("go");
+      }
+      setTimeout(() => {
+        if (animState.p1Action !== "ko") animState.p1Action = "idle";
+        if (animState.p2Action !== "ko") animState.p2Action = "idle";
+      }, special ? 1100 : 450);
+    }
+
+    // Helper menggambar bagian tubuh berbentuk kapsul 2.5D dengan shading silinder
+    function drawLimbCapsule(ctx, x1, y1, x2, y2, rStart, rEnd, colLight, colDark, rimColor) {
+      const dx = x2 - x1;
+      const dy = y2 - y1;
+      const len = Math.hypot(dx, dy) || 1;
+      const nx = -dy / len;
+      const ny = dx / len;
+
+      const grad = ctx.createLinearGradient(x1 + nx * rStart, y1 + ny * rStart, x1 - nx * rStart, y1 - ny * rStart);
+      grad.addColorStop(0, colLight);
+      grad.addColorStop(0.75, colDark);
+      grad.addColorStop(1, "#090d16");
+
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.moveTo(x1 + nx * rStart, y1 + ny * rStart);
+      ctx.lineTo(x2 + nx * rEnd, y2 + ny * rEnd);
+      ctx.arc(x2, y2, rEnd, Math.atan2(ny, nx), Math.atan2(-ny, -nx), false);
+      ctx.lineTo(x1 - nx * rStart, y1 - ny * rStart);
+      ctx.arc(x1, y1, rStart, Math.atan2(-ny, -nx), Math.atan2(ny, nx), false);
+      ctx.closePath();
+      ctx.fill();
+
+      if (rimColor) {
+        ctx.strokeStyle = rimColor;
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.moveTo(x1 + nx * rStart, y1 + ny * rStart);
+        ctx.lineTo(x2 + nx * rEnd, y2 + ny * rEnd);
+        ctx.stroke();
+      }
+    }
+
+    // Karakter 2.5D bervolume penuh (proporsi heroik, shading 3D, tidak gepeng)
+    function drawFighter(ctx, x, y, facing, c, action, f, isCardPreview = false) {
+      const atk = action === "attack";
+      const hurt = action === "hurt";
+      const ko = action === "ko";
+      const breathe = action === "idle" ? Math.sin(f * 0.12) : 0;
+      const stride = action === "idle" ? Math.cos(f * 0.12) : 0;
+
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.scale(facing, 1);
+
+      const lungeX = isCardPreview ? (atk ? 12 : 0) : (atk ? (c.id === "archer" ? 28 : 95) : hurt ? -24 : 0);
+      const bobY = ko ? 48 : (atk ? -6 : breathe * 2.5);
+      ctx.translate(lungeX, bobY);
+      ctx.rotate(ko ? -1.45 : hurt ? -0.22 : atk ? 0.12 : 0);
+
+      // 1. Bayangan Lantai Radial Lembut (2.5D Ground Contact)
+      if (!ko) {
+        const shGrad = ctx.createRadialGradient(0, 62 - bobY, 4, 0, 62 - bobY, 38);
+        shGrad.addColorStop(0, "rgba(0, 0, 0, 0.65)");
+        shGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
+        ctx.fillStyle = shGrad;
+        ctx.beginPath();
+        ctx.ellipse(0, 62 - bobY, 38, 9, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // 2. Rambut Belakang / Syal Berkibar
+      const wave = Math.sin(f * 0.16) * 6;
+      if (c.id === "archer") {
+        const hairGrad = ctx.createLinearGradient(-10, -56, -44, -6);
+        hairGrad.addColorStop(0, c.hair);
+        hairGrad.addColorStop(1, c.hairDark);
+        ctx.fillStyle = hairGrad;
+        ctx.beginPath();
+        ctx.moveTo(-8, -55);
+        ctx.quadraticCurveTo(-42, -46 + wave, -36, -6 + wave * 0.5);
+        ctx.quadraticCurveTo(-24, -14, -14, -44);
+        ctx.closePath();
+        ctx.fill();
+      } else if (c.id === "sword") {
+        ctx.fillStyle = c.glow;
+        ctx.beginPath();
+        ctx.moveTo(-10, -42);
+        ctx.quadraticCurveTo(-38, -36 + wave, -52, -26 - wave);
+        ctx.lineTo(-48, -19 - wave);
+        ctx.quadraticCurveTo(-30, -28 + wave, -10, -34);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      // 3. Kaki Belakang (Paha + Betis + Sepatu Tempur)
+      const backKneeX = -14 - stride * 2;
+      const backKneeY = 34;
+      const backFootX = -22 - stride * 2;
+      const backFootY = 56;
+      drawLimbCapsule(ctx, -6, 14, backKneeX, backKneeY, 8.5, 7, c.pants, "#070b14");
+      drawLimbCapsule(ctx, backKneeX, backKneeY, backFootX, backFootY, 7, 5.5, c.pants, "#05080f");
+      // Sepatu belakang
+      ctx.fillStyle = "#1e293b";
+      ctx.beginPath();
+      ctx.roundRect(backFootX - 8, backFootY - 2, 20, 9, 4);
+      ctx.fill();
+      ctx.fillStyle = c.glow;
+      ctx.fillRect(backFootX - 6, backFootY + 4, 17, 2.5);
+
+      // 4. Lengan Belakang (Guard Pose)
+      const bElbowX = -20;
+      const bElbowY = -12 + breathe * 2;
+      const bHandX = atk ? -26 : -6;
+      const bHandY = atk ? -4 : -6 + breathe * 2;
+      drawLimbCapsule(ctx, -13, -26, bElbowX, bElbowY, 7, 6, c.main, c.mainDark);
+      drawLimbCapsule(ctx, bElbowX, bElbowY, bHandX, bHandY, 6, 5, c.skin, c.skinShade);
+
+      // 5. Torso / Jaket Tempur 3D (Bahu bidang ke pinggang atletis)
+      const torsoGrad = ctx.createLinearGradient(-22, -34, 22, 16);
+      torsoGrad.addColorStop(0, c.mainDark);
+      torsoGrad.addColorStop(0.45, c.main);
+      torsoGrad.addColorStop(1, c.glow);
+
+      ctx.fillStyle = torsoGrad;
+      ctx.beginPath();
+      ctx.moveTo(-21, -33);
+      ctx.quadraticCurveTo(0, -37, 21, -33);
+      ctx.lineTo(15, 15);
+      ctx.quadraticCurveTo(0, 19, -15, 15);
+      ctx.closePath();
+      ctx.fill();
+
+      // Kerah & Aksen Dada
+      ctx.fillStyle = "#0b1120";
+      ctx.beginPath();
+      ctx.moveTo(-9, -34);
+      ctx.lineTo(2, -12);
+      ctx.lineTo(11, -34);
+      ctx.closePath();
+      ctx.fill();
+
+      // Garis Trim Neon & Sabuk Pinggang
+      ctx.strokeStyle = c.glow;
+      ctx.lineWidth = 2.2;
+      ctx.beginPath();
+      ctx.moveTo(-9, -34);
+      ctx.lineTo(2, -12);
+      ctx.lineTo(11, -34);
+      ctx.stroke();
+
+      ctx.fillStyle = "#090e1a";
+      ctx.fillRect(-15.5, 8, 31, 6);
+      ctx.fillStyle = c.glow;
+      ctx.fillRect(-4, 7.5, 9, 7);
+
+      // 6. Kaki Depan (Kuda-kuda kokoh atau tendangan maju)
+      const fKneeX = atk ? 26 : 16 + stride * 2;
+      const fKneeY = atk ? 26 : 34;
+      const fFootX = atk ? 42 : 22 + stride * 2;
+      const fFootY = atk ? 44 : 56;
+      drawLimbCapsule(ctx, 7, 14, fKneeX, fKneeY, 9, 7.5, c.main, c.pants, c.glow);
+      drawLimbCapsule(ctx, fKneeX, fKneeY, fFootX, fFootY, 7.5, 6, c.pants, "#070b14");
+      // Pelindung lutut
+      ctx.fillStyle = c.glow;
+      ctx.beginPath();
+      ctx.arc(fKneeX + 2, fKneeY, 4.2, 0, Math.PI * 2);
+      ctx.fill();
+      // Sepatu depan
+      ctx.fillStyle = "#1e293b";
+      ctx.beginPath();
+      ctx.roundRect(fFootX - 7, fFootY - 2, 22, 9, 4);
+      ctx.fill();
+      ctx.fillStyle = c.glow;
+      ctx.fillRect(fFootX - 5, fFootY + 4, 19, 2.5);
+
+      // 7. Leher & Kepala Bervolume (3D Shading + Ekspresi Tajam)
+      ctx.fillStyle = c.skinShade;
+      ctx.fillRect(-5, -40, 10, 8);
+
+      const headGrad = ctx.createRadialGradient(4, -52, 3, 0, -49, 17);
+      headGrad.addColorStop(0, c.skin);
+      headGrad.addColorStop(0.8, c.skinShade);
+      headGrad.addColorStop(1, "#a66c46");
+
+      ctx.fillStyle = headGrad;
+      ctx.beginPath();
+      ctx.moveTo(-13, -55);
+      ctx.quadraticCurveTo(0, -64, 14, -54);
+      ctx.lineTo(14, -44);
+      ctx.quadraticCurveTo(9, -35, 1, -35);
+      ctx.quadraticCurveTo(-11, -36, -13, -46);
+      ctx.closePath();
+      ctx.fill();
+
+      // Mata Anime Tajam + Iris Bercahaya
+      ctx.fillStyle = "#0f172a";
+      ctx.beginPath();
+      ctx.moveTo(2, -52);
+      ctx.lineTo(13, -50);
+      ctx.lineTo(12, -47);
+      ctx.lineTo(3, -48);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = c.glow;
+      ctx.fillRect(6, -50.5, 5, 2.5);
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(9, -50.5, 1.8, 1.5);
+
+      // Rambut Depan / Hood Berdimensi
+      const topHairGrad = ctx.createLinearGradient(-16, -74, 18, -46);
+      topHairGrad.addColorStop(0, c.hairDark);
+      topHairGrad.addColorStop(0.5, c.hair);
+      topHairGrad.addColorStop(1, "#ffffff");
+
+      ctx.fillStyle = topHairGrad;
+      ctx.beginPath();
+      if (c.id === "staff") {
+        // Hood bervolume dengan lipatan
+        ctx.fillStyle = c.main;
+        ctx.moveTo(-18, -44);
+        ctx.quadraticCurveTo(-18, -68, 2, -68);
+        ctx.quadraticCurveTo(18, -66, 17, -48);
+        ctx.lineTo(12, -54);
+        ctx.quadraticCurveTo(0, -58, -11, -51);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = c.glow;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      } else {
+        ctx.moveTo(-16, -50);
+        ctx.lineTo(-14, -70);
+        ctx.lineTo(-4, -61);
+        ctx.lineTo(3, -76);
+        ctx.lineTo(10, -61);
+        ctx.lineTo(20, -67);
+        ctx.lineTo(16, -52);
+        ctx.lineTo(7, -56);
+        ctx.lineTo(0, -51);
+        ctx.lineTo(-8, -56);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      // 8. Lengan Depan & Senjata Spesial
+      const elbowX = atk ? 36 : 19;
+      const elbowY = atk ? -25 : -13 + breathe * 2;
+      const handX = atk ? 62 : 28;
+      const handY = atk ? -25 : -15 + breathe * 2.5;
+
+      drawLimbCapsule(ctx, 13, -26, elbowX, elbowY, 7.5, 6.5, c.main, c.mainDark, c.glow);
+      drawLimbCapsule(ctx, elbowX, elbowY, handX, handY, 6.5, 5.5, c.skin, c.skinShade);
+
+      ctx.shadowColor = c.glow;
+      ctx.shadowBlur = atk ? 16 : 8;
+
+      if (c.id === "archer") {
+        // Busur Recurve Energi
+        ctx.strokeStyle = c.glow;
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.arc(handX + 4, handY, 30, -1.15, 1.15);
+        ctx.stroke();
+
+        ctx.strokeStyle = "#e2e8f0";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(handX + 4 + 30 * Math.cos(-1.15), handY - 27);
+        ctx.lineTo(atk ? handX - 18 : handX + 1, handY);
+        ctx.lineTo(handX + 4 + 30 * Math.cos(1.15), handY + 27);
+        ctx.stroke();
+
+        // Anak panah bercahaya
+        ctx.strokeStyle = c.glow;
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(handX - 12, handY);
+        ctx.lineTo(handX + 38, handY);
+        ctx.stroke();
+      } else if (c.id === "sword") {
+        // Katana Metalik + Aura Bilah
+        const bladeGrad = ctx.createLinearGradient(handX, handY, handX + 55, handY - 50);
+        bladeGrad.addColorStop(0, "#cbd5e1");
+        bladeGrad.addColorStop(0.6, "#ffffff");
+        bladeGrad.addColorStop(1, c.glow);
+
+        ctx.strokeStyle = bladeGrad;
+        ctx.lineWidth = 4.5;
+        ctx.beginPath();
+        if (atk) {
+          ctx.moveTo(handX - 6, handY);
+          ctx.lineTo(handX + 64, handY - 6);
+        } else {
+          ctx.moveTo(handX - 2, handY + 6);
+          ctx.lineTo(handX + 24, handY - 62);
+        }
+        ctx.stroke();
+
+        // Tsuba (pelindung gagang)
+        ctx.fillStyle = "#ffcc00";
+        ctx.beginPath();
+        ctx.arc(handX + 2, handY - 2, 5, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (c.id === "staff") {
+        // Tongkat Petir & Bola Plasma
+        ctx.strokeStyle = "#cbd5e1";
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(handX + 4, handY + 56);
+        ctx.lineTo(handX + 4, handY - 62);
+        ctx.stroke();
+
+        ctx.fillStyle = c.glow;
+        ctx.beginPath();
+        ctx.arc(handX + 4, handY - 66, 8 + Math.sin(f * 0.25) * 2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#ffffff";
+        ctx.beginPath();
+        ctx.arc(handX + 4, handY - 66, 3.5, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        // Gauntlet Baja Berapi (BARA)
+        const fistGrad = ctx.createRadialGradient(handX + 4, handY - 2, 2, handX + 2, handY, 12);
+        fistGrad.addColorStop(0, "#fde047");
+        fistGrad.addColorStop(0.5, c.glow);
+        fistGrad.addColorStop(1, c.mainDark);
+        ctx.fillStyle = fistGrad;
+        ctx.beginPath();
+        ctx.arc(handX + 2, handY, 11, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.shadowBlur = 0;
+      ctx.restore();
+    }
+
+    // Background Arena Bersih (Langit Malam Cyber Dojo, Bulan Perak-Biru, TANPA MERAH-MERAH GAJELAS)
+    function drawStage(ctx, W, H, f) {
+      // 1. Gradien Langit Malam Biru Tua / Indigo
+      const skyGrad = ctx.createLinearGradient(0, 0, 0, H);
+      skyGrad.addColorStop(0, "#060b17");
+      skyGrad.addColorStop(0.62, "#0f1c36");
+      skyGrad.addColorStop(1, "#080d1a");
+      ctx.fillStyle = skyGrad;
+      ctx.fillRect(0, 0, W, H);
+
+      // 2. Bintang-bintang halus
+      ctx.fillStyle = "rgba(226, 232, 240, 0.55)";
+      for (let s = 0; s < 22; s++) {
+        const sx = ((s * 173) % Math.max(1, Math.floor(W)));
+        const sy = ((s * 67) % Math.max(1, Math.floor(H * 0.55)));
+        const r = (s % 3 === 0) ? 1.5 : 1;
+        ctx.beginPath();
+        ctx.arc(sx, sy, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // 3. Bulan Purnama Biru-Perak Lembut di Kanan Atas (Bukan Merah!)
+      const moonX = W * 0.78;
+      const moonY = H * 0.25;
+      const moonHalo = ctx.createRadialGradient(moonX, moonY, 12, moonX, moonY, 85);
+      moonHalo.addColorStop(0, "rgba(186, 230, 253, 0.32)");
+      moonHalo.addColorStop(0.5, "rgba(56, 189, 248, 0.1)");
+      moonHalo.addColorStop(1, "rgba(56, 189, 248, 0)");
+      ctx.fillStyle = moonHalo;
+      ctx.beginPath();
+      ctx.arc(moonX, moonY, 85, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = "#e0f2fe";
+      ctx.beginPath();
+      ctx.arc(moonX, moonY, 24, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 4. Siluet Gedung Kota Malam & Pilar Dojo Bersih
+      const floorY = H * 0.78;
+      ctx.fillStyle = "#0a1224";
+      const bWidth = 58;
+      const count = Math.ceil(W / bWidth) + 1;
+      for (let i = 0; i < count; i++) {
+        const bh = 35 + ((i * 43) % 68);
+        const bx = i * bWidth - 10;
+        ctx.fillRect(bx, floorY - bh, bWidth - 6, bh);
+        // Jendela gedung cyan redup
+        ctx.fillStyle = ((i + (f >> 6)) % 4 === 0) ? "rgba(56, 189, 248, 0.35)" : "rgba(30, 41, 59, 0.5)";
+        ctx.fillRect(bx + 10, floorY - bh + 12, 8, 5);
+        ctx.fillRect(bx + 26, floorY - bh + 24, 8, 5);
+        ctx.fillStyle = "#0a1224";
+      }
+
+      // 5. Lantai Arena Batu / Cyber Tatami dengan Perspektif
+      const floorGrad = ctx.createLinearGradient(0, floorY, 0, H);
+      floorGrad.addColorStop(0, "#111a2e");
+      floorGrad.addColorStop(1, "#060a13");
+      ctx.fillStyle = floorGrad;
+      ctx.fillRect(0, floorY, W, H - floorY);
+
+      ctx.strokeStyle = "rgba(56, 189, 248, 0.25)";
+      ctx.lineWidth = 1;
+      const center = W * 0.5;
+      for (let i = -10; i <= 10; i++) {
+        ctx.beginPath();
+        ctx.moveTo(center + i * 32, floorY);
+        ctx.lineTo(center + i * 95, H);
+        ctx.stroke();
+      }
+
+      // Garis Batas Arena Emas Crisp
+      ctx.strokeStyle = "#ffcc00";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(0, floorY);
+      ctx.lineTo(W, floorY);
+      ctx.stroke();
+    }
+
+    function drawSpecial(ctx, sp, W, H) {
+      const t = sp.t;
+      const ch = sp.ch;
+      const d = sp.side === 1 ? 1 : -1;
+      const ax = sp.side === 1 ? W * 0.28 : W * 0.72;
+      const tx = sp.side === 1 ? W * 0.72 : W * 0.28;
+      const groundY = H * 0.76;
+
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      ctx.lineCap = "round";
+      ctx.shadowColor = ch.glow;
+      ctx.shadowBlur = 20;
+      ctx.strokeStyle = ch.glow;
+      ctx.fillStyle = ch.glow;
+
+      if (ch.id === "archer") {
+        for (let i = 0; i < 12; i++) {
+          const p = Math.min(1, Math.max(0, t * 1.5 - i * 0.05));
+          if (p <= 0) continue;
+          const ex = tx + (i - 6) * 20;
+          const sx = ex - 80 * d;
+          const sy = -20;
+          const ey = groundY;
+          const px = sx + (ex - sx) * p;
+          const py = sy + (ey - sy) * p;
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.moveTo(px - (ex - sx) * 0.14, py - (ey - sy) * 0.14);
+          ctx.lineTo(px, py);
+          ctx.stroke();
+          if (p >= 1) {
+            ctx.beginPath();
+            ctx.arc(ex, ey, 9 * (1 - t) + 3, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+      } else if (ch.id === "sword") {
+        const a = Math.min(1, t * 2.2);
+        ctx.lineWidth = 14 * (1 - t);
+        ctx.strokeStyle = "#ffffff";
+        ctx.beginPath();
+        ctx.arc(tx - 35 * d, H * 0.52, 92, d > 0 ? -2.2 : -0.94 - 3.14 * a, d > 0 ? -2.2 + 3.14 * a : -0.94, d < 0);
+        ctx.stroke();
+
+        ctx.lineWidth = 5;
+        ctx.strokeStyle = ch.glow;
+        ctx.beginPath();
+        ctx.arc(tx - 35 * d, H * 0.52, 100, d > 0 ? -2.2 : -0.94 - 3.14 * a, d > 0 ? -2.2 + 3.14 * a : -0.94, d < 0);
+        ctx.stroke();
+      } else if (ch.id === "fist") {
+        for (let i = 0; i < 9; i++) {
+          const p = Math.min(1, t * 1.6);
+          const cx = ax + (tx - ax) * p - i * 16 * d;
+          const r = 24 - i * 2;
+          ctx.globalAlpha = 0.75 - i * 0.07;
+          ctx.beginPath();
+          ctx.arc(cx, H * 0.5 + Math.sin(i + t * 20) * 8, Math.max(4, r), 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+        if (t > 0.45) {
+          const q = (t - 0.45) / 0.55;
+          for (let k = 0; k < 3; k++) {
+            ctx.lineWidth = 5 * (1 - q);
+            ctx.beginPath();
+            ctx.arc(tx, H * 0.52, q * (65 + k * 35), 0, Math.PI * 2);
+            ctx.stroke();
+          }
+        }
+      } else {
+        for (let b = 0; b < 3; b++) {
+          const bx = tx + (b - 1) * 55;
+          ctx.lineWidth = 5 - b;
+          ctx.strokeStyle = b === 1 ? "#ffffff" : ch.glow;
+          ctx.beginPath();
+          ctx.moveTo(bx, 0);
+          for (let y = 20; y <= groundY; y += 24) {
+            ctx.lineTo(bx + (Math.random() - 0.5) * 42, y);
+          }
+          ctx.stroke();
+        }
+      }
+      ctx.restore();
+    }
+
+    let animFrame = 0;
+    function startCanvasLoop() {
+      const canvas = document.getElementById("fightCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+
+      function loop() {
+        animFrame++;
+        const dim = syncCanvasResolution(canvas);
+        if (dim) {
+          const { w: W, h: H } = dim;
+          ctx.save();
+
+          if (animState.shake > 0) {
+            const sx = (Math.random() - 0.5) * animState.shake;
+            const sy = (Math.random() - 0.5) * animState.shake;
+            ctx.translate(sx, sy);
+            animState.shake *= 0.85;
+            if (animState.shake < 0.5) animState.shake = 0;
+          }
+
+          drawStage(ctx, W, H, animFrame);
+
+          // Skala karakter seragam agar proporsional di semua ukuran layar (tidak gepeng)
+          const charScale = Math.max(0.85, Math.min(H / 235, W / 540));
+          const fighterY = H * 0.78 - 62 * charScale;
+          const p1X = W * 0.28;
+          const p2X = W * 0.72;
+
+          ctx.save();
+          ctx.translate(p1X, fighterY);
+          ctx.scale(charScale, charScale);
+          drawFighter(ctx, 0, 0, 1, CHARS[animState.c1] || CHARS.sword, animState.p1Action, animFrame, false);
+          ctx.restore();
+
+          ctx.save();
+          ctx.translate(p2X, fighterY);
+          ctx.scale(charScale, charScale);
+          drawFighter(ctx, 0, 0, -1, CHARS[animState.c2] || CHARS.archer, animState.p2Action, animFrame, false);
+          ctx.restore();
+
+          if (animState.sp) {
+            animState.sp.t += 1 / 65;
+            if (animState.sp.t >= 1) animState.sp = null;
+            else drawSpecial(ctx, animState.sp, W, H);
+          }
+
+          if (animState.hitTimer > 0) {
+            animState.hitTimer--;
+            const fontSize = Math.round(22 * charScale);
+            ctx.font = `900 ${fontSize}px Orbitron, sans-serif`;
+            ctx.textAlign = "center";
+            ctx.strokeStyle = "#000000";
+            ctx.lineWidth = 4;
+            const textY = H * 0.3 - (55 - animState.hitTimer) * 0.45;
+            ctx.strokeText(animState.hitText, W * 0.5, textY);
+            ctx.fillStyle = "#ffcc00";
+            ctx.fillText(animState.hitText, W * 0.5, textY);
+          }
+
+          ctx.restore();
+        }
+        requestAnimationFrame(loop);
+      }
+      requestAnimationFrame(loop);
+    }
+    startCanvasLoop();
+
+    async function launchMatch(matchId) {
+      const updates = {
+        status: "fighting",
+        activeMatchId: matchId,
+        [`matches/${matchId}/status`]: "fighting",
+        [`matches/${matchId}/qIndex`]: Math.floor(Math.random() * QUESTIONS.length),
+        [`matches/${matchId}/qStep`]: 1
+      };
+      await saveRoomChanges(updates);
+    }
+
+    let lastRenderedStepKey = "";
+
+    function renderArena(room) {
+      const mId = room.activeMatchId;
+      const match = room.matches?.[mId];
+      if (!match) return;
+
+      animState.c1 = room.players?.[match.p1Id]?.char || "sword";
+      animState.c2 = room.players?.[match.p2Id]?.char || "archer";
+      document.getElementById("p1NameHud").textContent = (CHARS[animState.c1]?.icon || "") + " " + match.p1Name;
+      document.getElementById("p2NameHud").textContent = (CHARS[animState.c2]?.icon || "") + " " + match.p2Name;
+      document.getElementById("p1HpBar").style.width = Math.max(0, match.p1Hp) + "%";
+      document.getElementById("p2HpBar").style.width = Math.max(0, match.p2Hp) + "%";
+
+      if (match.p1Hp <= 0) animState.p1Action = "ko";
+      if (match.p2Hp <= 0) animState.p2Action = "ko";
+
+      const isParticipant = state.playerId === match.p1Id || state.playerId === match.p2Id;
+      document.getElementById("battleQuestionPanel").style.display = isParticipant ? "block" : "none";
+      document.getElementById("spectatorBanner").style.display = isParticipant ? "none" : "block";
+
+      if (!isParticipant) {
+        document.getElementById("spectatorStatusText").textContent =
+          `${match.p1Name} (${match.p1Hp} HP) vs ${match.p2Name} (${match.p2Hp} HP) — Ronde ${match.qStep}`;
+      }
+
+      const actionKey = `${mId}_${match.qStep}_${match.p1Hp}_${match.p2Hp}`;
+      if (match.lastAction && state.lastAnimKey !== actionKey) {
+        state.lastAnimKey = actionKey;
+        triggerAttackAnim(match.lastAction.side, match.lastAction.label, match.lastAction.special);
+      }
+
+      const stepKey = `${mId}_${match.qStep}_${match.qIndex}`;
+      if (lastRenderedStepKey !== stepKey && match.status === "fighting") {
+        lastRenderedStepKey = stepKey;
+        state.hasAnsweredCurrent = false;
+        loadQuestionToArena(match);
+        scheduleBotTurnIfNeeded(room, match);
+      }
+    }
+
+    function loadQuestionToArena(match) {
+      const q = QUESTIONS[match.qIndex % QUESTIONS.length];
+      document.getElementById("qCategory").textContent = `MATERI: ${q.cat}`;
+      document.getElementById("qStep").textContent = `SERANGAN KE-${match.qStep}`;
+      document.getElementById("qPassage").textContent = q.passage;
+      document.getElementById("qPrompt").textContent = q.prompt;
+
+      const expBox = document.getElementById("qExplanation");
+      expBox.classList.remove("show");
+      expBox.innerHTML = "";
+
+      const optWrap = document.getElementById("qOptions");
+      optWrap.innerHTML = "";
+      const letters = ["A", "B", "C", "D"];
+
+      q.options.forEach((optText, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "opt-btn";
+        btn.innerHTML = `<span class="opt-key">${letters[idx]}</span><span>${optText}</span>`;
+        btn.onclick = () => submitBattleAnswer(idx);
+        optWrap.appendChild(btn);
+      });
+
+      clearInterval(state.questionTimer);
+      state.timeLeft = 20;
+      document.getElementById("battleTimer").textContent = state.timeLeft;
+      state.questionTimer = setInterval(() => {
+        state.timeLeft--;
+        document.getElementById("battleTimer").textContent = Math.max(0, state.timeLeft);
+        if (state.timeLeft <= 0) {
+          clearInterval(state.questionTimer);
+          if (!state.hasAnsweredCurrent && state.isHost) {
+            advanceNextQuestion(state.roomData.activeMatchId);
+          }
+        }
+      }, 1000);
+    }
+
+    async function submitBattleAnswer(selectedIndex) {
+      if (state.hasAnsweredCurrent) return;
+      state.hasAnsweredCurrent = true;
+      clearInterval(state.questionTimer);
+      clearTimeout(state.botTimer);
+
+      const room = state.roomData;
+      const mId = room.activeMatchId;
+      const match = room.matches[mId];
+      if (!match || match.status !== "fighting") return;
+
+      const q = QUESTIONS[match.qIndex % QUESTIONS.length];
+      const isCorrect = selectedIndex === q.answer;
+
+      const buttons = document.querySelectorAll("#qOptions .opt-btn");
+      buttons.forEach((b, idx) => {
+        b.disabled = true;
+        if (idx === q.answer) b.classList.add("correct");
+        else if (idx === selectedIndex && !isCorrect) b.classList.add("wrong");
+      });
+
+      const expBox = document.getElementById("qExplanation");
+      expBox.innerHTML = `<strong>${isCorrect ? "✅ SERANGAN MASUK!" : "❌ SERANGAN MELESET!"}</strong> ${q.explain}`;
+      expBox.classList.add("show");
+
+      const mySide = state.playerId === match.p1Id ? 1 : 2;
+      const dmg = isCorrect ? (state.timeLeft >= 13 ? 40 : 30) : 0;
+
+      let newP1Hp = match.p1Hp;
+      let newP2Hp = match.p2Hp;
+
+      if (isCorrect) {
+        if (mySide === 1) newP2Hp = Math.max(0, newP2Hp - dmg);
+        else newP1Hp = Math.max(0, newP1Hp - dmg);
+      } else {
+        if (mySide === 1) newP1Hp = Math.max(0, newP1Hp - 15);
+        else newP2Hp = Math.max(0, newP2Hp - 15);
+      }
+
+      const me = room.players[state.playerId];
+      const updates = {
+        [`players/${state.playerId}/answered`]: (me.answered || 0) + 1,
+        [`players/${state.playerId}/correct`]: (me.correct || 0) + (isCorrect ? 1 : 0),
+        [`players/${state.playerId}/points`]: (me.points || 0) + (isCorrect ? 100 + state.timeLeft * 5 : 10),
+        [`matches/${mId}/p1Hp`]: newP1Hp,
+        [`matches/${mId}/p2Hp`]: newP2Hp,
+        [`matches/${mId}/lastAction`]: {
+          side: isCorrect ? mySide : (mySide === 1 ? 2 : 1),
+          special: isCorrect,
+          label: isCorrect ? `CRITICAL -${dmg} HP!` : `COUNTER -15 HP!`
+        }
+      };
+
+      await saveRoomChanges(updates);
+
+      setTimeout(() => {
+        if (newP1Hp <= 0 || newP2Hp <= 0) {
+          const winnerId = newP1Hp > 0 ? match.p1Id : match.p2Id;
+          finishSingleMatch(mId, winnerId);
+        } else {
+          advanceNextQuestion(mId);
+        }
+      }, 2200);
+    }
+
+    function scheduleBotTurnIfNeeded(room, match) {
+      clearTimeout(state.botTimer);
+      const p2 = room.players[match.p2Id];
+      if (!p2 || !p2.isBot) return;
+
+      state.botTimer = setTimeout(async () => {
+        if (state.hasAnsweredCurrent || match.status !== "fighting") return;
+        state.hasAnsweredCurrent = true;
+        clearInterval(state.questionTimer);
+
+        const botCorrect = Math.random() < 0.65;
+        const newP1Hp = botCorrect ? Math.max(0, match.p1Hp - 25) : match.p1Hp;
+        const newP2Hp = botCorrect ? match.p2Hp : Math.max(0, match.p2Hp - 20);
+
+        await saveRoomChanges({
+          [`players/${p2.id}/answered`]: (p2.answered || 0) + 1,
+          [`players/${p2.id}/correct`]: (p2.correct || 0) + (botCorrect ? 1 : 0),
+          [`players/${p2.id}/points`]: (p2.points || 0) + (botCorrect ? 110 : 10),
+          [`matches/${match.id}/p1Hp`]: newP1Hp,
+          [`matches/${match.id}/p2Hp`]: newP2Hp,
+          [`matches/${match.id}/lastAction`]: {
+            side: botCorrect ? 2 : 1,
+            special: botCorrect,
+            label: botCorrect ? "BOT HIT -25 HP!" : "BOT MISS -20 HP!"
+          }
+        });
+
+        setTimeout(() => {
+          if (newP1Hp <= 0 || newP2Hp <= 0) {
+            finishSingleMatch(match.id, newP1Hp > 0 ? match.p1Id : match.p2Id);
+          } else {
+            advanceNextQuestion(match.id);
+          }
+        }, 1600);
+      }, 6500);
+    }
+
+    async function advanceNextQuestion(mId) {
+      const match = state.roomData?.matches?.[mId];
+      if (!match || match.status !== "fighting") return;
+      await saveRoomChanges({
+        [`matches/${mId}/qStep`]: (match.qStep || 1) + 1,
+        [`matches/${mId}/qIndex`]: (match.qIndex + 1) % QUESTIONS.length
+      });
+    }
+
+    async function finishSingleMatch(mId, winnerId) {
+      const room = state.roomData;
+      const match = room.matches[mId];
+      if (!match || match.status === "done") return;
+
+      const loserId = winnerId === match.p1Id ? match.p2Id : match.p1Id;
+      const winnerObj = room.players[winnerId];
+
+      animState.p1Action = "idle";
+      animState.p2Action = "idle";
+
+      await saveRoomChanges({
+        status: "bracket",
+        activeMatchId: null,
+        [`matches/${mId}/status`]: "done",
+        [`matches/${mId}/winnerId`]: winnerId,
+        [`players/${winnerId}/wins`]: (winnerObj?.wins || 0) + 1,
+        [`players/${winnerId}/points`]: (winnerObj?.points || 0) + 250,
+        [`players/${loserId}/eliminated`]: true
+      });
+    }
+
+    // =========================================================
+    // 10. PAPAN SKOR & PODIUM AKHIR
+    // =========================================================
+    function renderLeaderboard(room) {
+      const players = Object.values(room.players || {}).sort((a, b) => {
+        if ((b.wins || 0) !== (a.wins || 0)) return (b.wins || 0) - (a.wins || 0);
+        return (b.points || 0) - (a.points || 0);
+      });
+
+      const podium = document.getElementById("podiumContainer");
+      podium.innerHTML = "";
+
+      const order = [players[1], players[0], players[2]].filter(Boolean);
+      order.forEach((p) => {
+        const rank = players.indexOf(p) + 1;
+        const medal = rank === 1 ? "🥇 JUARA 1" : rank === 2 ? "🥈 JUARA 2" : "🥉 JUARA 3";
+        const col = document.createElement("div");
+        col.className = "podium-col" + (rank === 1 ? " first" : "");
+        col.innerHTML = `
+          <div style="font-size:12px; font-weight:800; color:var(--gold); margin-bottom:4px;">${medal}</div>
+          <div style="font-weight:700; font-size:14px;">${p.name}</div>
+          <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">${p.points || 0} PTS</div>
+        `;
+        podium.appendChild(col);
+      });
+
+      const tbody = document.getElementById("leaderboardBody");
+      tbody.innerHTML = "";
+      players.forEach((p, idx) => {
+        const acc = p.answered > 0 ? Math.round((p.correct / p.answered) * 100) : 0;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><strong>#${idx + 1}</strong></td>
+          <td>${p.name}</td>
+          <td>${p.wins || 0}x</td>
+          <td>${acc}% (${p.correct || 0}/${p.answered || 0})</td>
+          <td style="color:var(--gold); font-weight:700;">${p.points || 0}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+  </script>
+</body>
+</html>
